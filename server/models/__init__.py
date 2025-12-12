@@ -1,6 +1,6 @@
 from server.models.user import User, Role
 from server.models.customer import Customer
-from server.models.order import Order, OrderItem, OrderStatusHistory
+from server.models.order import Order, OrderItem, OrderStatusHistory, OrderMaterial, ORDER_STATUS, STATUS_LABELS, MATERIAL_LABELS
 from server.models.design import DesignTask, DesignProof
 from server.models.production import ProductionTask, Equipment
 from server.models.delivery import Delivery
@@ -10,7 +10,8 @@ from server.models.inventory import InventoryItem, InventoryTransaction
 __all__ = [
     'User', 'Role',
     'Customer',
-    'Order', 'OrderItem', 'OrderStatusHistory',
+    'Order', 'OrderItem', 'OrderStatusHistory', 'OrderMaterial',
+    'ORDER_STATUS', 'STATUS_LABELS', 'MATERIAL_LABELS',
     'DesignTask', 'DesignProof',
     'ProductionTask', 'Equipment',
     'Delivery',
