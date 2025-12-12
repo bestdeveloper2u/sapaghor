@@ -25,6 +25,19 @@ export const api = {
   delete: (endpoint) => fetchAPI(endpoint, { method: 'DELETE' })
 }
 
+export const STATUS_LABELS = {
+  order: { en: 'Order', bn: 'অর্ডার' },
+  design_sent: { en: 'Design Sent', bn: 'ডিজাইনে প্রেরণ' },
+  proof_given: { en: 'Proof Given', bn: 'প্রুফ প্রদান' },
+  proof_complete: { en: 'Proof Complete', bn: 'প্রুফ সম্পন্ন' },
+  plate_setting: { en: 'Plate Setting', bn: 'প্লেট সেটিং এ প্রেরণ' },
+  printing_complete: { en: 'Printing Complete', bn: 'ছাপা সম্পন্ন' },
+  binding_sent: { en: 'Binding Sent', bn: 'বাইন্ডিং এ প্রেরণ' },
+  order_ready: { en: 'Order Ready', bn: 'অর্ডার সম্পন্ন ও প্রস্তুত' },
+  delivered: { en: 'Delivered', bn: 'ডেলিভারী প্রদান' },
+  cancelled: { en: 'Cancelled', bn: 'বাতিল' }
+}
+
 export const authAPI = {
   login: (credentials) => api.post('/auth/login', credentials),
   logout: () => api.post('/auth/logout'),
@@ -47,7 +60,8 @@ export const ordersAPI = {
   update: (id, data) => api.put(`/orders/${id}`, data),
   updateStatus: (id, data) => api.put(`/orders/${id}/status`, data),
   getHistory: (id) => api.get(`/orders/${id}/history`),
-  getStatuses: () => api.get('/order-statuses')
+  getStatuses: () => api.get('/order-statuses'),
+  getStatusLabels: () => Promise.resolve(STATUS_LABELS)
 }
 
 export const designAPI = {

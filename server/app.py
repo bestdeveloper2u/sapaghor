@@ -1,9 +1,11 @@
 import os
+import click
 from flask import Flask, send_from_directory
 from flask_cors import CORS
 from server.config import Config
 from server.extensions import db, login_manager
 from server.models import User, Role
+from server.seed_data import seed_database, seed_if_empty
 
 def create_app():
     app = Flask(__name__, static_folder='../client/dist', static_url_path='')
@@ -29,10 +31,22 @@ def create_app():
             return send_from_directory(app.static_folder, path)
         return send_from_directory(app.static_folder, 'index.html')
     
+    @app.cli.command('seed')
+    @click.option('--force', is_flag=True, help='Force seed even if data exists')
+    def seed_command(force):
+        """Seed the database with sample data."""
+        if force:
+            click.echo('Force seeding database...')
+            seed_database()
+        else:
+            seed_if_empty()
+        click.echo('Seed complete!')
+    
     with app.app_context():
         db.create_all()
         init_roles()
         init_admin_user()
+        seed_if_empty()
     
     return app
 

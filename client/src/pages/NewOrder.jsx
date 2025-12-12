@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { ordersAPI, customersAPI } from '../utils/api'
+import { MATERIAL_LABELS, FEE_LABELS } from '../components/WorkflowProgress'
 import { Plus, Trash2, ArrowLeft } from 'lucide-react'
 
 export default function NewOrder() {
@@ -14,7 +15,25 @@ export default function NewOrder() {
     expected_delivery_date: '',
     special_instructions: '',
     discount: 0,
-    items: [{ product_name: '', quantity: 1, size: '', color: '', unit_price: 0 }]
+    design_fee: 0,
+    urgency_fee: 0,
+    cashing_fee: 0,
+    misc_fee: 0,
+    items: [{
+      product_name: '',
+      quantity: 1,
+      size: '',
+      color: '',
+      unit_price: 0,
+      plate: 0,
+      paper: 0,
+      duplicate: 0,
+      ink: 0,
+      printing: 0,
+      binding: 0,
+      laminating: 0,
+      others: 0
+    }]
   })
   const [error, setError] = useState('')
   const [showNewCustomer, setShowNewCustomer] = useState(false)
@@ -52,7 +71,21 @@ export default function NewOrder() {
   const handleAddItem = () => {
     setFormData({
       ...formData,
-      items: [...formData.items, { product_name: '', quantity: 1, size: '', color: '', unit_price: 0 }]
+      items: [...formData.items, {
+        product_name: '',
+        quantity: 1,
+        size: '',
+        color: '',
+        unit_price: 0,
+        plate: 0,
+        paper: 0,
+        duplicate: 0,
+        ink: 0,
+        printing: 0,
+        binding: 0,
+        laminating: 0,
+        others: 0
+      }]
     })
   }
 
@@ -69,35 +102,50 @@ export default function NewOrder() {
     setFormData({ ...formData, items: newItems })
   }
 
-  const calculateTotal = () => {
-    const subtotal = formData.items.reduce((sum, item) => {
+  const calculateItemMaterialTotal = (item) => {
+    return (item.plate || 0) + (item.paper || 0) + (item.duplicate || 0) + (item.ink || 0) +
+           (item.printing || 0) + (item.binding || 0) + (item.laminating || 0) + (item.others || 0)
+  }
+
+  const calculateSubtotal = () => {
+    return formData.items.reduce((sum, item) => {
       return sum + (item.quantity * item.unit_price)
     }, 0)
-    return subtotal - (formData.discount || 0)
+  }
+
+  const calculateExtraFees = () => {
+    return (formData.design_fee || 0) + (formData.urgency_fee || 0) +
+           (formData.cashing_fee || 0) + (formData.misc_fee || 0)
+  }
+
+  const calculateTotal = () => {
+    const subtotal = calculateSubtotal()
+    const extraFees = calculateExtraFees()
+    return subtotal + extraFees - (formData.discount || 0)
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     if (!formData.customer_id) {
-      setError('Please select a customer')
+      setError('গ্রাহক নির্বাচন করুন (Please select a customer)')
       return
     }
     if (!formData.work_name) {
-      setError('Please enter work name')
+      setError('কাজের নাম লিখুন (Please enter work name)')
       return
     }
     createOrderMutation.mutate(formData)
   }
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6">
+    <div className="max-w-5xl mx-auto space-y-6">
       <div className="flex items-center gap-4">
         <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-lg">
           <ArrowLeft className="w-5 h-5" />
         </button>
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">New Order</h1>
-          <p className="text-gray-600">Create a new order</p>
+          <h1 className="text-2xl font-bold text-gray-900">New Order (নতুন অর্ডার)</h1>
+          <p className="text-gray-600">নতুন অর্ডার তৈরি করুন</p>
         </div>
       </div>
 
@@ -106,20 +154,19 @@ export default function NewOrder() {
           <div className="bg-red-50 text-red-600 px-4 py-3 rounded-lg">{error}</div>
         )}
 
-        {/* Customer Selection */}
         <div className="card">
-          <h2 className="text-lg font-semibold mb-4">Customer Information</h2>
+          <h2 className="text-lg font-semibold mb-4">Customer Information (গ্রাহকের তথ্য)</h2>
           
           {!showNewCustomer ? (
             <div className="space-y-4">
               <div>
-                <label className="label">Select Customer</label>
+                <label className="label">Select Customer (গ্রাহক নির্বাচন করুন) *</label>
                 <select
                   value={formData.customer_id}
                   onChange={(e) => setFormData({ ...formData, customer_id: e.target.value })}
                   className="input"
                 >
-                  <option value="">Select a customer...</option>
+                  <option value="">গ্রাহক নির্বাচন করুন...</option>
                   {customersData?.customers?.map((customer) => (
                     <option key={customer.id} value={customer.id}>
                       {customer.company_name} - {customer.phone}
@@ -132,14 +179,14 @@ export default function NewOrder() {
                 onClick={() => setShowNewCustomer(true)}
                 className="text-primary-600 hover:underline text-sm"
               >
-                + Add New Customer
+                + নতুন গ্রাহক যোগ করুন (Add New Customer)
               </button>
             </div>
           ) : (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="label">Company/Customer Name *</label>
+                  <label className="label">Company/Customer Name (প্রতিষ্ঠান/গ্রাহকের নাম) *</label>
                   <input
                     type="text"
                     value={newCustomer.company_name}
@@ -149,7 +196,7 @@ export default function NewOrder() {
                   />
                 </div>
                 <div>
-                  <label className="label">Contact Person</label>
+                  <label className="label">Contact Person (যোগাযোগকারী)</label>
                   <input
                     type="text"
                     value={newCustomer.contact_person}
@@ -158,7 +205,7 @@ export default function NewOrder() {
                   />
                 </div>
                 <div>
-                  <label className="label">Phone *</label>
+                  <label className="label">Phone (ফোন) *</label>
                   <input
                     type="text"
                     value={newCustomer.phone}
@@ -167,7 +214,7 @@ export default function NewOrder() {
                   />
                 </div>
                 <div>
-                  <label className="label">Address</label>
+                  <label className="label">Address (ঠিকানা)</label>
                   <input
                     type="text"
                     value={newCustomer.address}
@@ -184,26 +231,25 @@ export default function NewOrder() {
                   disabled={!newCustomer.company_name || !newCustomer.phone}
                   className="btn-primary disabled:opacity-50"
                 >
-                  Save Customer
+                  গ্রাহক সংরক্ষণ করুন
                 </button>
                 <button
                   type="button"
                   onClick={() => setShowNewCustomer(false)}
                   className="btn-secondary"
                 >
-                  Cancel
+                  বাতিল
                 </button>
               </div>
             </div>
           )}
         </div>
 
-        {/* Order Details */}
         <div className="card">
-          <h2 className="text-lg font-semibold mb-4">Order Details</h2>
+          <h2 className="text-lg font-semibold mb-4">Order Details (অর্ডার বিবরণ)</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="label">Order Type</label>
+              <label className="label">Order Type (অর্ডার প্রকার)</label>
               <select
                 value={formData.order_type}
                 onChange={(e) => setFormData({ ...formData, order_type: e.target.value })}
@@ -220,12 +266,12 @@ export default function NewOrder() {
                 value={formData.work_name}
                 onChange={(e) => setFormData({ ...formData, work_name: e.target.value })}
                 className="input"
-                placeholder="e.g., Business Card, Banner"
+                placeholder="যেমন: বিজনেস কার্ড, ব্যানার"
                 required
               />
             </div>
             <div className="md:col-span-2">
-              <label className="label">Description</label>
+              <label className="label">Description (বিবরণ)</label>
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
@@ -234,7 +280,7 @@ export default function NewOrder() {
               />
             </div>
             <div>
-              <label className="label">Expected Delivery Date</label>
+              <label className="label">Expected Delivery Date (প্রত্যাশিত ডেলিভারি তারিখ)</label>
               <input
                 type="date"
                 value={formData.expected_delivery_date}
@@ -243,7 +289,7 @@ export default function NewOrder() {
               />
             </div>
             <div>
-              <label className="label">Special Instructions</label>
+              <label className="label">Special Instructions (বিশেষ নির্দেশনা)</label>
               <input
                 type="text"
                 value={formData.special_instructions}
@@ -254,21 +300,20 @@ export default function NewOrder() {
           </div>
         </div>
 
-        {/* Order Items */}
         <div className="card">
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold">Order Items</h2>
+            <h2 className="text-lg font-semibold">Order Items (অর্ডার আইটেম)</h2>
             <button type="button" onClick={handleAddItem} className="btn-secondary inline-flex items-center gap-2">
               <Plus className="w-4 h-4" />
-              Add Item
+              আইটেম যোগ করুন
             </button>
           </div>
           
-          <div className="space-y-4">
+          <div className="space-y-6">
             {formData.items.map((item, index) => (
               <div key={index} className="p-4 bg-gray-50 rounded-lg space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="font-medium">Item {index + 1}</span>
+                  <span className="font-medium">Item {index + 1} (আইটেম {index + 1})</span>
                   {formData.items.length > 1 && (
                     <button
                       type="button"
@@ -279,15 +324,16 @@ export default function NewOrder() {
                     </button>
                   )}
                 </div>
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div className="col-span-2">
-                    <label className="label">Product Name</label>
+                    <label className="label">Product Name (পণ্যের নাম)</label>
                     <input
                       type="text"
                       value={item.product_name}
                       onChange={(e) => handleItemChange(index, 'product_name', e.target.value)}
                       className="input"
-                      placeholder="e.g., Business Card"
+                      placeholder="যেমন: বিজনেস কার্ড"
                     />
                   </div>
                   <div>
@@ -307,7 +353,7 @@ export default function NewOrder() {
                       value={item.size}
                       onChange={(e) => handleItemChange(index, 'size', e.target.value)}
                       className="input"
-                      placeholder="e.g., A4, 3x5"
+                      placeholder="যেমন: A4, 3x5"
                     />
                   </div>
                   <div>
@@ -320,7 +366,7 @@ export default function NewOrder() {
                     />
                   </div>
                   <div>
-                    <label className="label">Unit Price (৳)</label>
+                    <label className="label">Unit Price (একক মূল্য) ৳</label>
                     <input
                       type="number"
                       value={item.unit_price}
@@ -331,10 +377,32 @@ export default function NewOrder() {
                     />
                   </div>
                   <div>
-                    <label className="label">Total</label>
+                    <label className="label">Total (মোট)</label>
                     <div className="input bg-gray-100">
                       ৳{(item.quantity * item.unit_price).toLocaleString()}
                     </div>
+                  </div>
+                </div>
+
+                <div className="border-t pt-4">
+                  <h4 className="text-sm font-medium text-gray-700 mb-3">Material Costs (উপকরণ খরচ)</h4>
+                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    {Object.entries(MATERIAL_LABELS).map(([key, label]) => (
+                      <div key={key}>
+                        <label className="label text-xs">{label.bn} ({label.en})</label>
+                        <input
+                          type="number"
+                          value={item[key] || 0}
+                          onChange={(e) => handleItemChange(index, key, parseFloat(e.target.value) || 0)}
+                          className="input text-sm"
+                          min="0"
+                          step="0.01"
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <div className="mt-2 text-right text-sm text-gray-600">
+                    Material Total (উপকরণ মোট): ৳{calculateItemMaterialTotal(item).toLocaleString()}
                   </div>
                 </div>
               </div>
@@ -342,37 +410,64 @@ export default function NewOrder() {
           </div>
         </div>
 
-        {/* Totals */}
+        <div className="card">
+          <h2 className="text-lg font-semibold mb-4">Extra Fees (অতিরিক্ত ফি)</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            {Object.entries(FEE_LABELS).map(([key, label]) => (
+              <div key={key}>
+                <label className="label">{label.bn} ({label.en})</label>
+                <input
+                  type="number"
+                  value={formData[key] || 0}
+                  onChange={(e) => setFormData({ ...formData, [key]: parseFloat(e.target.value) || 0 })}
+                  className="input"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            ))}
+          </div>
+        </div>
+
         <div className="card">
           <div className="flex flex-col items-end space-y-2">
-            <div className="flex gap-4">
-              <span className="text-gray-600">Discount:</span>
-              <input
-                type="number"
-                value={formData.discount}
-                onChange={(e) => setFormData({ ...formData, discount: parseFloat(e.target.value) || 0 })}
-                className="input w-32"
-                min="0"
-              />
-            </div>
-            <div className="flex gap-4 text-xl font-bold">
-              <span>Total:</span>
-              <span>৳{calculateTotal().toLocaleString()}</span>
+            <div className="w-full max-w-xs space-y-2">
+              <div className="flex justify-between">
+                <span className="text-gray-600">Subtotal (উপমোট):</span>
+                <span>৳{calculateSubtotal().toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between">
+                <span className="text-gray-600">Extra Fees (অতিরিক্ত ফি):</span>
+                <span>৳{calculateExtraFees().toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between items-center">
+                <span className="text-gray-600">Discount (ছাড়):</span>
+                <input
+                  type="number"
+                  value={formData.discount}
+                  onChange={(e) => setFormData({ ...formData, discount: parseFloat(e.target.value) || 0 })}
+                  className="input w-32 text-right"
+                  min="0"
+                />
+              </div>
+              <div className="flex justify-between text-xl font-bold border-t pt-2">
+                <span>Total (মোট):</span>
+                <span>৳{calculateTotal().toLocaleString()}</span>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Submit */}
         <div className="flex justify-end gap-4">
           <button type="button" onClick={() => navigate(-1)} className="btn-secondary">
-            Cancel
+            বাতিল (Cancel)
           </button>
           <button
             type="submit"
             disabled={createOrderMutation.isPending}
             className="btn-primary disabled:opacity-50"
           >
-            {createOrderMutation.isPending ? 'Creating...' : 'Create Order'}
+            {createOrderMutation.isPending ? 'তৈরি হচ্ছে...' : 'অর্ডার তৈরি করুন (Create Order)'}
           </button>
         </div>
       </form>
