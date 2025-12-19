@@ -5,6 +5,8 @@ description = ""
 authors = ["Your Name <you@example.com>"]
 requires-python = ">=3.11"
 dependencies = [
+    "click>=8.3.1",
+    "email-validator>=2.3.0",
     "flask>=3.1.2",
     "flask-cors>=6.0.1",
     "flask-login>=0.6.3",
