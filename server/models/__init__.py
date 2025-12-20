@@ -6,6 +6,9 @@ from server.models.production import ProductionTask, Equipment
 from server.models.delivery import Delivery
 from server.models.finance import Invoice, Payment, Expense
 from server.models.inventory import InventoryItem, InventoryTransaction
+from server.models.shareholder import Shareholder, ShareholderProfit
+from server.models.notification import Notification
+from server.models.task import EmployeeTask
 
 __all__ = [
     'User', 'Role',
@@ -16,5 +19,8 @@ __all__ = [
     'ProductionTask', 'Equipment',
     'Delivery',
     'Invoice', 'Payment', 'Expense',
-    'InventoryItem', 'InventoryTransaction'
+    'InventoryItem', 'InventoryTransaction',
+    'Shareholder', 'ShareholderProfit',
+    'Notification',
+    'EmployeeTask'
 ]

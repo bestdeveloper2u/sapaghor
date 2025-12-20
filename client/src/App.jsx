@@ -13,14 +13,16 @@ import Production from './pages/Production'
 import Delivery from './pages/Delivery'
 import Finance from './pages/Finance'
 import Users from './pages/Users'
+import EmployeeTasks from './pages/EmployeeTasks'
+import ShareholderDashboard from './pages/ShareholderDashboard'
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated, loading } = useAuth()
   
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-600"></div>
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-600 via-blue-600 to-cyan-600">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white"></div>
       </div>
     )
   }
@@ -51,6 +53,8 @@ export default function App() {
         <Route path="delivery" element={<Delivery />} />
         <Route path="finance" element={<Finance />} />
         <Route path="users" element={<Users />} />
+        <Route path="tasks" element={<EmployeeTasks />} />
+        <Route path="shareholder" element={<ShareholderDashboard />} />
       </Route>
     </Routes>
   )
