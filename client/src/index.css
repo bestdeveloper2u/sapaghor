@@ -2,89 +2,112 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  min-height: 100vh;
+:root {
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-secondary-600: #7c3aed;
+  --color-secondary-700: #6d28d9;
 }
 
-/* Glassmorphism Effects */
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  @apply bg-gradient-light text-gray-900;
+  transition: background 0.3s ease;
+}
+
+body.dark {
+  @apply bg-gradient-dark text-gray-50;
+}
+
+/* Glassmorphism Components */
 @layer components {
   .glass {
-    @apply bg-glass-light backdrop-blur-xl border border-white/20 rounded-2xl shadow-glass;
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-glass;
   }
 
-  .glass-dark {
-    @apply bg-glass-medium backdrop-blur-xl border border-white/30 rounded-2xl shadow-glass-lg;
+  .glass.dark {
+    @apply bg-dark-800/60 backdrop-blur-xl border border-white/10;
   }
 
+  .card {
+    @apply bg-white/70 backdrop-blur-xl border border-white/20 rounded-2xl shadow-glass p-6;
+  }
+
+  .card.dark {
+    @apply bg-dark-800/60 backdrop-blur-xl border border-white/10 p-6 shadow-md-dark;
+  }
+
+  /* Buttons */
   .btn-primary {
     @apply bg-gradient-to-r from-primary-600 to-primary-500 text-white px-4 py-2 rounded-xl hover:from-primary-700 hover:to-primary-600 transition-all duration-300 font-medium shadow-lg hover:shadow-xl;
   }
-  
+
   .btn-secondary {
-    @apply bg-white/30 backdrop-blur text-gray-800 px-4 py-2 rounded-xl hover:bg-white/40 transition-all duration-300 font-medium border border-white/20;
+    @apply bg-white/30 backdrop-blur text-gray-900 px-4 py-2 rounded-xl hover:bg-white/40 transition-all duration-300 font-medium border border-white/20;
   }
-  
+
+  .btn-secondary.dark {
+    @apply bg-dark-700/50 backdrop-blur text-white px-4 py-2 rounded-xl hover:bg-dark-600/70 transition-all duration-300 font-medium border border-white/10;
+  }
+
   .btn-danger {
     @apply bg-red-500/80 backdrop-blur text-white px-4 py-2 rounded-xl hover:bg-red-600/90 transition-all duration-300 font-medium border border-white/20;
   }
-  
-  .card {
-    @apply glass p-6;
-  }
-  
-  .card-dark {
-    @apply glass-dark p-6;
-  }
-  
+
+  /* Forms */
   .input {
-    @apply w-full px-3 py-2 bg-white/20 backdrop-blur border border-white/30 rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-gray-800 placeholder-gray-500;
+    @apply w-full px-4 py-3 bg-white/20 backdrop-blur border border-white/30 rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-gray-900 placeholder-gray-500;
   }
-  
+
+  .input.dark {
+    @apply bg-dark-700/50 backdrop-blur border border-white/20 text-white placeholder-gray-400 focus:ring-secondary-400;
+  }
+
   .label {
-    @apply block text-sm font-medium text-gray-700 mb-2;
+    @apply block text-sm font-semibold text-gray-700 mb-2;
   }
 
-  /* Responsive utilities */
-  .responsive-padding { @apply px-4 py-3; }
-  .responsive-text { @apply text-base; }
-
-  @media (max-width: 320px) {
-    .responsive-padding { @apply px-2 py-1; }
-    .responsive-text { @apply text-xs; }
+  .label.dark {
+    @apply text-gray-300;
   }
 
-  @media (max-width: 480px) {
-    .responsive-padding { @apply px-3 py-2; }
-    .responsive-text { @apply text-sm; }
+  /* Tables */
+  .table-header {
+    @apply text-left py-3 px-4 text-gray-700 font-semibold border-b border-gray-200;
   }
 
-  @media (max-width: 768px) {
-    .responsive-padding { @apply px-4 py-3; }
-    .responsive-text { @apply text-base; }
+  .table-header.dark {
+    @apply text-gray-300 border-white/10;
   }
 
-  @media (max-width: 1024px) {
-    .responsive-padding { @apply px-5 py-4; }
-    .responsive-text { @apply text-lg; }
+  .table-cell {
+    @apply py-3 px-4 text-gray-900;
   }
 
-  @media (min-width: 1025px) {
-    .responsive-padding { @apply px-6 py-5; }
-    .responsive-text { @apply text-lg; }
+  .table-cell.dark {
+    @apply text-gray-300;
   }
 
-  .notification {
-    @apply glass p-4 rounded-xl mb-3 flex items-start gap-3;
-    animation: slideIn 0.3s ease-out;
+  /* Badge */
+  .badge {
+    @apply px-3 py-1 rounded-full text-xs font-medium inline-block;
   }
 
-  .notification.success { @apply bg-green-500/20 border-green-500/30; }
-  .notification.error { @apply bg-red-500/20 border-red-500/30; }
-  .notification.warning { @apply bg-yellow-500/20 border-yellow-500/30; }
-  .notification.info { @apply bg-blue-500/20 border-blue-500/30; }
+  .badge-success { @apply bg-green-100 text-green-800; }
+  .badge-error { @apply bg-red-100 text-red-800; }
+  .badge-warning { @apply bg-yellow-100 text-yellow-800; }
+  .badge-info { @apply bg-blue-100 text-blue-800; }
+  .badge-pending { @apply bg-yellow-100 text-yellow-800; }
+  .badge-completed { @apply bg-green-100 text-green-800; }
 
+  .badge-success.dark { @apply bg-green-900/40 text-green-300; }
+  .badge-error.dark { @apply bg-red-900/40 text-red-300; }
+  .badge-warning.dark { @apply bg-yellow-900/40 text-yellow-300; }
+  .badge-info.dark { @apply bg-blue-900/40 text-blue-300; }
+  .badge-pending.dark { @apply bg-yellow-900/40 text-yellow-300; }
+  .badge-completed.dark { @apply bg-green-900/40 text-green-300; }
+
+  /* Animations */
   @keyframes slideIn {
     from {
       opacity: 0;
@@ -94,5 +117,10 @@ body {
       opacity: 1;
       transform: translateY(0);
     }
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
   }
 }

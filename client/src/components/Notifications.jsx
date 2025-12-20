@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { Bell, X, CheckCircle, AlertCircle, Info } from 'lucide-react'
 import { useAuth } from '../contexts/AuthContext'
+import { useTheme } from '../contexts/ThemeContext'
 import { api } from '../utils/api'
 
 export default function Notifications() {
@@ -8,6 +9,7 @@ export default function Notifications() {
   const [showPanel, setShowPanel] = useState(false)
   const [unreadCount, setUnreadCount] = useState(0)
   const { user } = useAuth()
+  const { isDark } = useTheme()
 
   useEffect(() => {
     if (!user) return
@@ -61,7 +63,7 @@ export default function Notifications() {
     <div className="relative">
       <button
         onClick={() => setShowPanel(!showPanel)}
-        className="relative p-2 text-white hover:bg-white/10 rounded-lg transition-colors"
+        className={`relative p-2 rounded-lg transition-colors ${isDark ? 'text-white hover:bg-dark-700/50' : 'text-gray-900 hover:bg-white/20'}`}
       >
         <Bell className="w-6 h-6" />
         {unreadCount > 0 && (
@@ -72,35 +74,35 @@ export default function Notifications() {
       </button>
 
       {showPanel && (
-        <div className="absolute right-0 mt-2 w-96 glass rounded-2xl shadow-glass-lg z-50 max-h-96 overflow-y-auto">
-          <div className="p-4 border-b border-white/20">
-            <h3 className="font-semibold text-white">Notifications</h3>
+        <div className={`absolute right-0 mt-2 w-96 glass rounded-2xl shadow-glass-lg z-50 max-h-96 overflow-y-auto ${isDark ? 'dark' : ''}`}>
+          <div className={`p-4 border-b ${isDark ? 'border-white/10' : 'border-white/20'}`}>
+            <h3 className={`font-semibold ${isDark ? 'text-white' : 'text-gray-900'}`}>Notifications</h3>
           </div>
           
           {notifications.length === 0 ? (
-            <div className="p-8 text-center text-white/60">
+            <div className={`p-8 text-center ${isDark ? 'text-gray-400' : 'text-gray-500'}`}>
               <Bell className="w-12 h-12 mx-auto mb-2 opacity-50" />
               <p>No notifications yet</p>
             </div>
           ) : (
-            <div className="divide-y divide-white/20">
+            <div className={`divide-y ${isDark ? 'divide-white/10' : 'divide-white/20'}`}>
               {notifications.map((notif) => (
                 <div
                   key={notif.id}
-                  className={`p-4 hover:bg-white/5 transition-colors ${!notif.is_read ? 'bg-white/10' : ''}`}
+                  className={`p-4 transition-colors ${isDark ? 'hover:bg-dark-700/50' : 'hover:bg-white/10'} ${!notif.is_read ? (isDark ? 'bg-dark-700/30' : 'bg-white/20') : ''}`}
                 >
                   <div className="flex gap-3">
                     {getNotificationIcon(notif.notification_type)}
                     <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-white text-sm">{notif.title}</h4>
-                      <p className="text-white/70 text-xs mt-1 line-clamp-2">{notif.message}</p>
-                      <p className="text-white/40 text-xs mt-2">
+                      <h4 className={`font-medium text-sm ${isDark ? 'text-white' : 'text-gray-900'}`}>{notif.title}</h4>
+                      <p className={`text-xs mt-1 line-clamp-2 ${isDark ? 'text-gray-400' : 'text-gray-700'}`}>{notif.message}</p>
+                      <p className={`text-xs mt-2 ${isDark ? 'text-gray-500' : 'text-gray-500'}`}>
                         {new Date(notif.created_at).toLocaleDateString()}
                       </p>
                     </div>
                     <button
                       onClick={() => deleteNotification(notif.id)}
-                      className="text-white/40 hover:text-white/60"
+                      className={isDark ? 'text-gray-500 hover:text-gray-300' : 'text-gray-400 hover:text-gray-600'}
                     >
                       <X className="w-4 h-4" />
                     </button>
@@ -108,7 +110,7 @@ export default function Notifications() {
                   {!notif.is_read && (
                     <button
                       onClick={() => markAsRead(notif.id)}
-                      className="text-xs text-blue-300 mt-2 hover:text-blue-200"
+                      className="text-xs text-blue-500 mt-2 hover:text-blue-600"
                     >
                       Mark as read
                     </button>
