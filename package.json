@@ -1,0 +1,18 @@
+{
+  "name": "sapaghor-erp",
+  "version": "1.0.0",
+  "description": "Sapaghor ERP System - Printing & Design Business Management",
+  "scripts": {
+    "start": "gunicorn --bind 0.0.0.0:5000 --reuse-port main:app",
+    "dev": "gunicorn --bind 0.0.0.0:5000 --reuse-port --reload main:app",
+    "build": "cd client && npm install && npm run build",
+    "client:install": "cd client && npm install",
+    "client:build": "cd client && npm run build",
+    "db:push": "python -c \"from server.app import create_app; app = create_app(); print('Database schema created successfully!')\"",
+    "db:seed": "python -c \"from server.app import create_app; from server.seed_data import seed_database; import sys; app = create_app(); with app.app_context(): seed_database()\"",
+    "db:seed:force": "python -c \"from server.app import create_app; from server.seed_data import seed_database; import sys; app = create_app(); with app.app_context(): seed_database()\""
+  },
+  "keywords": ["ERP", "printing", "design", "business", "management"],
+  "author": "Sapaghor Team",
+  "license": "MIT"
+}
